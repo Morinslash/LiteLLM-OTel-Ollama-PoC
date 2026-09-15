@@ -28,6 +28,16 @@ services:
     environment:
       LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-sk-1234} # Admin password for login
       DATABASE_URL: postgresql://litellm:${POSTGRES_PASSWORD}@db:5432/litellm
+      # Enable LiteLLM's current OTel instrumentation.
+      LITELLM_OTEL_V2: "true"
+      # Export OpenTelemetry data using OTLP over HTTP/protobuf.
+      OTEL_EXPORTER: "otlp_http"
+      # Internal Compose-network address, not Windows localhost.
+      OTEL_ENDPOINT: "http://otel-lgtm:4318"
+      # Resource name displayed in Grafana/Tempo.
+      OTEL_SERVICE_NAME: "litellm-proxy"
+      # Enable OTel GenAI metrics as well as traces.
+      LITELLM_OTEL_INTEGRATION_ENABLE_METRICS: "true"
     depends_on:
       db:
         condition: service_healthy

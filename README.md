@@ -29,7 +29,7 @@ The current focus is the platform foundation. A local Ollama model and a CLI age
 - [x] Grafana UI is reachable and initial login/password change is complete.
 - [ ] Configure a model in LiteLLM.
 - [ ] Send a chat request through LiteLLM.
-- [ ] Configure LiteLLM to export OpenTelemetry data.
+- [x] Configure LiteLLM to export OpenTelemetry data.
 - [ ] Verify LiteLLM traces, metrics, and OTel log records in Grafana.
 - [ ] Add a local Ollama model.
 - [ ] Add a simple swappable local CLI agent.
