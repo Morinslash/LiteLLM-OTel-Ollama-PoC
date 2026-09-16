@@ -38,6 +38,8 @@ services:
       OTEL_SERVICE_NAME: "litellm-proxy"
       # Enable OTel GenAI metrics as well as traces.
       LITELLM_OTEL_INTEGRATION_ENABLE_METRICS: "true"
+      # Host machine IP to reach Ollama
+      OLLAMA_BASE_URL: "http://${HOST_GATEWAY_IP}:11434"
     depends_on:
       db:
         condition: service_healthy

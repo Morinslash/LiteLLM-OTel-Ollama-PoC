@@ -1,4 +1,8 @@
-model_list: []
+model_list:
+  - model_name: local-chat
+    litellm_params:
+      model: ollama/qwen3:1.7b
+      api_base: os.environ/OLLAMA_BASE_URL
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
