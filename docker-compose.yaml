@@ -28,6 +28,8 @@ services:
     environment:
       LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-sk-1234} # Admin password for login
       DATABASE_URL: postgresql://litellm:${POSTGRES_PASSWORD}@db:5432/litellm
+      OLLAMA_BASE_URL: "http://${HOST_GATEWAY_IP}:11434"
+      # OpenTelemetry Parameters
       # Enable LiteLLM's current OTel instrumentation.
       LITELLM_OTEL_V2: "true"
       # Export OpenTelemetry data using OTLP over HTTP/protobuf.
@@ -36,10 +38,10 @@ services:
       OTEL_ENDPOINT: "http://otel-lgtm:4318"
       # Resource name displayed in Grafana/Tempo.
       OTEL_SERVICE_NAME: "litellm-proxy"
-      # Enable OTel GenAI metrics as well as traces.
+      # Enable OTel GenAI metrics as well as traces, not logs
       LITELLM_OTEL_INTEGRATION_ENABLE_METRICS: "true"
-      # Host machine IP to reach Ollama
-      OLLAMA_BASE_URL: "http://${HOST_GATEWAY_IP}:11434"
+      # Enable OpenTelemetry GenAI prompts/responses as span attributes and events, traces only
+      OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT: "span_and_event"
     depends_on:
       db:
         condition: service_healthy
@@ -60,7 +62,9 @@ services:
       - "4318:4318"
     volumes:
       - otel-lgtm-data:/data
-    
+      - ./otel/tempo.yaml:/otel-lgtm/tempo-config.yaml:ro
+
+
 volumes:
   litellm-db-data:
   otel-lgtm-data:
