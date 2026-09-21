@@ -1,8 +1,10 @@
 model_list:
   - model_name: local-chat
     litellm_params:
-      model: ollama/qwen3:1.7b
+      model: ollama_chat/qwen3:1.7b
       api_base: os.environ/OLLAMA_BASE_URL
+    model_info:
+      supports_function_calling: true
 
 litellm_settings:
   # Format LiteLLM proxy output as JSON.
