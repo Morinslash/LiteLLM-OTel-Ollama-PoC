@@ -49,7 +49,8 @@ services:
       db:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:4000/health/liveliness"]
+      # ghcr.io/berriai/litellm:main-stable is Wolfi-based and has no wget/curl; python3 is present.
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:4000/health/liveliness')"]
       interval: 15s
       timeout: 5s
       retries: 5
