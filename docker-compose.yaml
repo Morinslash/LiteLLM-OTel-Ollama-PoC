@@ -28,6 +28,9 @@ services:
     environment:
       LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:-sk-1234} # Admin password for login
       DATABASE_URL: postgresql://litellm:${POSTGRES_PASSWORD}@db:5432/litellm
+      # Default: the WSL2 gateway IP, for Ollama running natively on the Windows host
+      # (see ollama-wsl-networking.md). Set OLLAMA_BASE_URL=http://ollama:11434 in .env
+      # instead when running with `--profile with-ollama` (Linux/Docker, no WSL2).
       OLLAMA_BASE_URL: "http://${HOST_GATEWAY_IP}:11434"
       # OpenTelemetry Parameters
       # Enable LiteLLM's current OTel instrumentation.
@@ -64,7 +67,39 @@ services:
       - otel-lgtm-data:/data
       - ./otel/tempo.yaml:/otel-lgtm/tempo-config.yaml:ro
 
+  # Optional containerised Ollama, for Linux/Docker hosts without the WSL2 gateway-IP
+  # networking this repo otherwise assumes. Off by default so the existing Windows +
+  # Podman + WSL2 workflow (host-native Ollama) is untouched.
+  #
+  #   docker compose --profile with-ollama up -d
+  #   # then set OLLAMA_BASE_URL=http://ollama:11434 in .env and restart litellm
+  ollama:
+    image: ollama/ollama:latest
+    profiles: ["with-ollama"]
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  ollama-pull:
+    image: ollama/ollama:latest
+    profiles: ["with-ollama"]
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      OLLAMA_HOST: "http://ollama:11434"
+    entrypoint: ["/bin/sh", "-c", "ollama pull ${OLLAMA_MODEL:-qwen3:1.7b}"]
+    restart: "no"
 
 volumes:
   litellm-db-data:
   otel-lgtm-data:
+  ollama-data:
