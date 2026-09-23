@@ -5,6 +5,9 @@ model_list:
       api_base: os.environ/OLLAMA_BASE_URL
     model_info:
       supports_function_calling: true
+  - model_name: claude-haiku
+    litellm_params:
+      model: anthropic/claude-haiku-4-5
 
 litellm_settings:
   # Format LiteLLM proxy output as JSON.
@@ -13,7 +16,11 @@ litellm_settings:
   request_correlation_in_logs: true
   # Capture raw provider-facing request and response data for logging integrations.
   # POC ONLY: this can contain prompts, system messages, tool arguments, and outputs.
-  log_raw_request_response: true
+  log_raw_request_response: true 
+  # Forward Claude Code's OAuth Authorization header only when routing to this alias.
+  model_group_settings:
+    forward_client_headers_to_llm_api:
+      - claude-haiku
 
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
